@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "798232377817",
+    "project_id": "playerkiss-9d8fa",
+    "storage_bucket": "playerkiss-9d8fa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798232377817:android:63d8ceb343a024e4c1c1c8",
+        "android_client_info": {
+          "package_name": "com.example.rock_band_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-CBBUwTfJEYEXHYw4njpfEaW_9eOOVsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

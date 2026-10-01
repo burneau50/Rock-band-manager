@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==============================
+    // MORCEAUX
+    // ==============================
+    match /songs/{songId} {
+      allow read, create, update: if request.auth != null;
+
+      allow delete: if request.auth != null
+        && request.auth.token.email == "antoninlemonnier50@gmail.com";
+    }
+
+    // ==============================
+    // UTILISATEURS
+    // ==============================
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ==============================
+    // REPRÉSENTATIONS
+    // ==============================
+    match /representations/{representationId} {
+      allow read, create, update: if request.auth != null;
+
+      allow delete: if request.auth != null
+        && request.auth.token.email == "antoninlemonnier50@gmail.com";
+    }
+
+    // ==============================
+    // ÉVÈNEMENTS EXISTANTS
+    // ==============================
+    match /events/{eventId} {
+      allow read, create, update: if request.auth != null;
+
+      allow delete: if request.auth != null
+        && request.auth.token.email == "antoninlemonnier50@gmail.com";
+    }
+  }
+}
