@@ -1,0 +1,182 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // FONCTIONS DE SÉCURITÉ
+    // ============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.uid == "i9FgMz7tKxZqKEa73SCKEa4lmQV2";
+    }
+
+
+    // ============================================================
+    // MORCEAUX
+    // ============================================================
+
+    match /songs/{songId} {
+
+      // Tous les membres connectés peuvent voir les morceaux.
+      allow read: if isSignedIn();
+
+      // Tous les membres connectés peuvent proposer un morceau.
+      allow create: if isSignedIn();
+
+      // Modification :
+      //
+      // ADMIN :
+      // - peut modifier toutes les informations.
+      //
+      // MEMBRE :
+      // - peut modifier uniquement son propre statut ;
+      // - peut modifier uniquement ses propres instruments ;
+      // - peut ajouter/retirer uniquement son propre like.
+      //
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+
+          // Les seules grandes catégories modifiables
+          // par un membre sont likes, progress et status.
+          && request.resource.data.diff(resource.data)
+              .affectedKeys()
+              .hasOnly(['likes', 'progress', 'status'])
+
+          // --------------------------------------------------------
+          // STATUS
+          // --------------------------------------------------------
+          && (
+            !request.resource.data.diff(resource.data)
+                .affectedKeys()
+                .hasAny(['status'])
+            ||
+            request.resource.data.status.diff(resource.data.status)
+                .affectedKeys()
+                .hasOnly([request.auth.uid])
+          )
+
+          // --------------------------------------------------------
+          // PROGRESS / INSTRUMENTS
+          // --------------------------------------------------------
+          && (
+            !request.resource.data.diff(resource.data)
+                .affectedKeys()
+                .hasAny(['progress'])
+            ||
+            request.resource.data.progress.diff(resource.data.progress)
+                .affectedKeys()
+                .hasOnly([request.auth.uid])
+          )
+
+          // --------------------------------------------------------
+          // LIKES
+          // --------------------------------------------------------
+          //
+          // Le membre ne peut ajouter ou retirer que son propre UID.
+          //
+          && (
+            !request.resource.data.diff(resource.data)
+                .affectedKeys()
+                .hasAny(['likes'])
+            ||
+            (
+              request.resource.data.likes
+                .hasOnly(resource.data.likes.concat([request.auth.uid]))
+
+              &&
+              resource.data.likes
+                .hasOnly(request.resource.data.likes.concat([request.auth.uid]))
+            )
+          )
+        );
+
+      // Seul l'administrateur peut supprimer un morceau.
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // UTILISATEURS
+    // ============================================================
+
+    match /users/{userId} {
+
+      // Les membres connectés peuvent consulter les profils.
+      // L'application utilise cette information pour le récapitulatif.
+      allow read: if isSignedIn();
+
+      // Un utilisateur peut créer uniquement son propre profil.
+      allow create: if isSignedIn()
+        && request.auth.uid == userId;
+
+      // Un utilisateur peut modifier uniquement son propre profil.
+      allow update: if isSignedIn()
+        && request.auth.uid == userId;
+
+      // Suppression réservée à l'administrateur.
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // REPRÉSENTATIONS / RDV
+    // ============================================================
+
+    match /representations/{representationId} {
+
+      // Tous les membres connectés peuvent voir les RDV.
+      allow read: if isSignedIn();
+
+      // Seul l'administrateur peut créer une représentation.
+      allow create: if isAdmin();
+
+      // Modification :
+      //
+      // ADMIN :
+      // - peut tout modifier.
+      //
+      // MEMBRE :
+      // - peut uniquement modifier sa propre disponibilité.
+      //
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+
+          && request.resource.data.diff(resource.data)
+              .affectedKeys()
+              .hasOnly(['availability'])
+
+          && request.resource.data.availability
+              .diff(resource.data.availability)
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+        );
+
+      // Seul l'administrateur peut supprimer un RDV.
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // ÉVÈNEMENTS EXISTANTS
+    // ============================================================
+
+    match /events/{eventId} {
+
+      // Pour l'instant, on conserve le fonctionnement existant
+      // afin de ne pas casser une éventuelle fonctionnalité
+      // encore utilisée par l'application.
+      allow read, create, update: if isSignedIn();
+
+      // Suppression réservée à l'administrateur.
+      allow delete: if isAdmin();
+    }
+  }
+}
