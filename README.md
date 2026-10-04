@@ -1,17 +1,40 @@
-# rock_band_app
+# Rock Band Manager — refactorisation de main.dart
 
-A new Flutter project.
+Cette archive contient la refactorisation du code actuellement valide.
 
-## Getting Started
+## Fichiers modifies/crees
 
-This project is a starting point for a Flutter application.
+- `lib/main.dart`
+- `lib/screens/auth_screen.dart`
+- `lib/screens/home_screen.dart`
+- `lib/screens/home_song_methods.dart`
+- `lib/screens/home_representation_methods.dart`
+- `lib/screens/home_ui_methods.dart`
 
-A few resources to get you started if this is your first Flutter project:
+Les fichiers existants `lib/models/song.dart`, `lib/services/song_service.dart` et `lib/services/auth_service.dart` ne sont pas modifies.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Application automatique
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Decompressez cette archive ou utilisez `apply_refactor.ps1`.
+2. Ouvrez PowerShell dans la racine du projet Flutter.
+3. Executez :
+
+`powershell -ExecutionPolicy Bypass -File .\apply_refactor.ps1`
+
+Le script sauvegarde automatiquement l'ancien `lib/main.dart` avant remplacement.
+
+## Verification
+
+```powershell
+flutter analyze
+flutter build web
+flutter run -d chrome
+```
+
+## Git apres validation
+
+```powershell
+git add lib/main.dart lib/screens
+git commit -m "Refactorise l architecture de l application"
+git push
+```
