@@ -1,9 +1,9 @@
-﻿part of 'home_screen.dart';
+part of 'home_screen.dart';
 
 extension _HomeUiMethods on _HomeScreenState {
   Widget _buildHomeUi(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 62,
@@ -102,7 +102,6 @@ extension _HomeUiMethods on _HomeScreenState {
                   text: 'Récapitulatif',
                 ),
                 Tab(icon: Icon(Icons.event, size: 16), text: 'RDV'),
-                Tab(icon: Icon(Icons.calendar_month, size: 16), text: 'Calendrier'),
               ],
             ),
           ),
@@ -121,7 +120,6 @@ extension _HomeUiMethods on _HomeScreenState {
             _buildSongsList(context),
             _buildSummaryTable(),
             _buildRepresentations(),
-            _buildCalendarUi(context),
           ],
         ),
       ),
@@ -725,4 +723,3 @@ extension _HomeUiMethods on _HomeScreenState {
     );
   }
 }
-

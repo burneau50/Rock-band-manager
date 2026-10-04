@@ -178,14 +178,5 @@ service cloud.firestore {
       // Suppression réservée à l'administrateur.
       allow delete: if isAdmin();
     }
-
-    // ============================================================
-    // CALENDRIER
-    // ============================================================
-
-    match /calendar_events/{eventId} {
-      allow read: if isSignedIn();
-      allow create, update, delete: if isAdmin();
-    }
   }
 }
