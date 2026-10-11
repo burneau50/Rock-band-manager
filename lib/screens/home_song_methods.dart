@@ -1,7 +1,6 @@
 part of 'home_screen.dart';
 
 extension _HomeSongMethods on _HomeScreenState {
-
   Future<void> _setSongStatus(String docId, String status) async {
     await _songService.setUserStatus(
       songId: docId,
@@ -229,7 +228,6 @@ extension _HomeSongMethods on _HomeScreenState {
       }
     }
   }
-
 
   void _showAddSongDialog(BuildContext context) {
     final titleController = TextEditingController();

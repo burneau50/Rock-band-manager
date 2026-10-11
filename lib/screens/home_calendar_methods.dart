@@ -486,11 +486,11 @@ class _CalendarViewState extends State<_CalendarView> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: isToday
-                            ? Colors.amber.withOpacity(0.12)
+                            ? Colors.amber.withValues(alpha: 0.12)
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(7),
                         border: Border.all(
-                          color: isToday ? Colors.amber : Colors.grey.withOpacity(0.22),
+                          color: isToday ? Colors.amber : Colors.grey.withValues(alpha: 0.22),
                           width: isToday ? 1.5 : 0.7,
                         ),
                       ),
@@ -502,7 +502,7 @@ class _CalendarViewState extends State<_CalendarView> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                              color: inMonth ? null : Colors.grey.withOpacity(0.45),
+                              color: inMonth ? null : Colors.grey.withValues(alpha: 0.45),
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -512,7 +512,7 @@ class _CalendarViewState extends State<_CalendarView> {
                               margin: const EdgeInsets.only(bottom: 2),
                               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.amber.withOpacity(0.18),
+                                color: Colors.amber.withValues(alpha: 0.18),
                                 borderRadius: BorderRadius.circular(3),
                               ),
                               child: Text(

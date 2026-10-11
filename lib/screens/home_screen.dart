@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,9 +9,8 @@ import '../services/song_service.dart';
 import '../services/auth_service.dart';
 
 part 'home_song_methods.dart';
-part 'home_representation_methods.dart';
-part 'home_ui_methods.dart';
 part 'home_calendar_methods.dart';
+part 'home_ui_methods.dart';
 
 const Map<String, FaIconData> instruments = {
   'guitare': FontAwesomeIcons.guitar,
@@ -38,7 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool get _isAdmin => user.uid == 'i9FgMz7tKxZqKEa73SCKEa4lmQV2';
 
+  void _toggleAdminMode() {
+    setState(() {
+      _adminMode = !_adminMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) => _buildHomeUi(context);
 }
-

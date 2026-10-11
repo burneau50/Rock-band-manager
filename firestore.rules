@@ -23,35 +23,18 @@ service cloud.firestore {
 
     match /songs/{songId} {
 
-      // Tous les membres connectés peuvent voir les morceaux.
       allow read: if isSignedIn();
 
-      // Tous les membres connectés peuvent proposer un morceau.
       allow create: if isSignedIn();
 
-      // Modification :
-      //
-      // ADMIN :
-      // - peut modifier toutes les informations.
-      //
-      // MEMBRE :
-      // - peut modifier uniquement son propre statut ;
-      // - peut modifier uniquement ses propres instruments ;
-      // - peut ajouter/retirer uniquement son propre like.
-      //
       allow update: if isAdmin()
         || (
           isSignedIn()
 
-          // Les seules grandes catégories modifiables
-          // par un membre sont likes, progress et status.
           && request.resource.data.diff(resource.data)
               .affectedKeys()
               .hasOnly(['likes', 'progress', 'status'])
 
-          // --------------------------------------------------------
-          // STATUS
-          // --------------------------------------------------------
           && (
             !request.resource.data.diff(resource.data)
                 .affectedKeys()
@@ -62,9 +45,6 @@ service cloud.firestore {
                 .hasOnly([request.auth.uid])
           )
 
-          // --------------------------------------------------------
-          // PROGRESS / INSTRUMENTS
-          // --------------------------------------------------------
           && (
             !request.resource.data.diff(resource.data)
                 .affectedKeys()
@@ -75,12 +55,6 @@ service cloud.firestore {
                 .hasOnly([request.auth.uid])
           )
 
-          // --------------------------------------------------------
-          // LIKES
-          // --------------------------------------------------------
-          //
-          // Le membre ne peut ajouter ou retirer que son propre UID.
-          //
           && (
             !request.resource.data.diff(resource.data)
                 .affectedKeys()
@@ -89,7 +63,6 @@ service cloud.firestore {
             (
               request.resource.data.likes
                 .hasOnly(resource.data.likes.concat([request.auth.uid]))
-
               &&
               resource.data.likes
                 .hasOnly(request.resource.data.likes.concat([request.auth.uid]))
@@ -97,7 +70,6 @@ service cloud.firestore {
           )
         );
 
-      // Seul l'administrateur peut supprimer un morceau.
       allow delete: if isAdmin();
     }
 
@@ -108,83 +80,86 @@ service cloud.firestore {
 
     match /users/{userId} {
 
-      // Les membres connectés peuvent consulter les profils.
-      // L'application utilise cette information pour le récapitulatif.
       allow read: if isSignedIn();
 
-      // Un utilisateur peut créer uniquement son propre profil.
       allow create: if isSignedIn()
         && request.auth.uid == userId;
 
-      // Un utilisateur peut modifier uniquement son propre profil.
       allow update: if isSignedIn()
         && request.auth.uid == userId;
 
-      // Suppression réservée à l'administrateur.
       allow delete: if isAdmin();
     }
 
 
     // ============================================================
-    // REPRÉSENTATIONS / RDV
+    // REPRÉSENTATIONS / CALENDRIER RDV
     // ============================================================
 
     match /representations/{representationId} {
 
-      // Tous les membres connectés peuvent voir les RDV.
+      // Tous les utilisateurs connectés peuvent voir le calendrier.
       allow read: if isSignedIn();
 
-      // Seul l'administrateur peut créer une représentation.
+      // Seul l'administrateur peut créer une date.
       allow create: if isAdmin();
 
-      // Modification :
+      // ------------------------------------------------------------
+      // MODIFICATION
       //
       // ADMIN :
-      // - peut tout modifier.
+      // Peut modifier librement la représentation.
       //
       // MEMBRE :
-      // - peut uniquement modifier sa propre disponibilité.
+      // Peut uniquement modifier :
+      //   - availability
+      //   - updatedAt
       //
+      // Et dans availability, il ne peut modifier que SON UID.
+      // ------------------------------------------------------------
+
       allow update: if isAdmin()
-        || (
+        ||
+        (
           isSignedIn()
 
           && request.resource.data.diff(resource.data)
               .affectedKeys()
-              .hasOnly(['availability'])
+              .hasOnly(['availability', 'updatedAt'])
 
           && request.resource.data.availability
               .diff(resource.data.availability)
               .affectedKeys()
               .hasOnly([request.auth.uid])
+
+          && request.resource.data.availability[request.auth.uid] is bool
         );
 
-      // Seul l'administrateur peut supprimer un RDV.
+      // Seul l'administrateur peut supprimer une date.
       allow delete: if isAdmin();
     }
 
 
     // ============================================================
-    // ÉVÈNEMENTS EXISTANTS
+    // ÉVÉNEMENTS EXISTANTS
     // ============================================================
 
     match /events/{eventId} {
 
-      // Pour l'instant, on conserve le fonctionnement existant
-      // afin de ne pas casser une éventuelle fonctionnalité
-      // encore utilisée par l'application.
       allow read, create, update: if isSignedIn();
 
-      // Suppression réservée à l'administrateur.
       allow delete: if isAdmin();
     }
 
+
     // ============================================================
-    // CALENDRIER
+    // ANCIEN CALENDRIER
     // ============================================================
 
     match /calendar_events/{eventId} {
+
       allow read: if isSignedIn();
+
       allow create, update, delete: if isAdmin();
     }
   }

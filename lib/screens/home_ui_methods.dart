@@ -1,9 +1,9 @@
-﻿part of 'home_screen.dart';
+part of 'home_screen.dart';
 
 extension _HomeUiMethods on _HomeScreenState {
   Widget _buildHomeUi(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 62,
@@ -24,11 +24,7 @@ extension _HomeUiMethods on _HomeScreenState {
                       ? 'Désactiver le mode administration'
                       : 'Activer le mode administration',
                   child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _adminMode = !_adminMode;
-                      });
-                    },
+                    onTap: _toggleAdminMode,
                     borderRadius: BorderRadius.circular(5),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -38,7 +34,7 @@ extension _HomeUiMethods on _HomeScreenState {
                       decoration: BoxDecoration(
                         color: _adminMode
                             ? Colors.amber
-                            : Colors.amber.withOpacity(0.75),
+                            : Colors.amber.withValues(alpha: 0.75),
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(color: Colors.amber, width: 1),
                       ),
@@ -101,8 +97,7 @@ extension _HomeUiMethods on _HomeScreenState {
                   icon: Icon(Icons.table_chart, size: 16),
                   text: 'Récapitulatif',
                 ),
-                Tab(icon: Icon(Icons.event, size: 16), text: 'RDV'),
-                Tab(icon: Icon(Icons.calendar_month, size: 16), text: 'Calendrier'),
+                Tab(icon: Icon(Icons.calendar_month, size: 16), text: 'RDV'),
               ],
             ),
           ),
@@ -120,7 +115,6 @@ extension _HomeUiMethods on _HomeScreenState {
           children: [
             _buildSongsList(context),
             _buildSummaryTable(),
-            _buildRepresentations(),
             _buildCalendarUi(context),
           ],
         ),
@@ -680,10 +674,16 @@ extension _HomeUiMethods on _HomeScreenState {
                                       ),
                                       decoration: BoxDecoration(
                                         color: status == 'pret'
-                                            ? Colors.green.withOpacity(0.18)
+                                            ? Colors.green.withValues(
+                                                alpha: 0.18,
+                                              )
                                             : status == 'en_cours'
-                                            ? Colors.orange.withOpacity(0.18)
-                                            : Colors.red.withOpacity(0.18),
+                                            ? Colors.orange.withValues(
+                                                alpha: 0.18,
+                                              )
+                                            : Colors.red.withValues(
+                                                alpha: 0.18,
+                                              ),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Container(
@@ -725,4 +725,3 @@ extension _HomeUiMethods on _HomeScreenState {
     );
   }
 }
-
