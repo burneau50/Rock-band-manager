@@ -45,4 +45,76 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) => _buildHomeUi(context);
+
+    List<String> _preferredSongOrder = [];
+    bool _songOrderLoaded = false;
+
+    @override
+    void initState() {
+      super.initState();
+      _loadPreferredSongOrder();
+    }
+
+    Future<void> _loadPreferredSongOrder() async {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('user_preferences')
+            .doc(user.uid)
+            .get();
+
+        final savedOrder = doc.data()?['songOrder'];
+
+        if (!mounted) return;
+
+        setState(() {
+          _preferredSongOrder = savedOrder is List
+              ? savedOrder.whereType<String>().toList()
+              : [];
+          _songOrderLoaded = true;
+        });
+      } catch (e) {
+        if (!mounted) return;
+
+        setState(() {
+          _songOrderLoaded = true;
+        });
+      }
+    }
+
+    Future<void> _reorderSongs(
+      List<Song> songs,
+      int oldIndex,
+      int newIndex,
+    ) async {
+     
+      final reorderedSongs = List<Song>.from(songs);
+      final movedSong = reorderedSongs.removeAt(oldIndex);
+      reorderedSongs.insert(newIndex, movedSong);
+
+      final newOrder = reorderedSongs.map((song) => song.id).toList();
+
+      setState(() {
+        _preferredSongOrder = newOrder;
+      });
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('user_preferences')
+            .doc(user.uid)
+            .set({
+          'songOrder': newOrder,
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } catch (e) {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Impossible d’enregistrer votre ordre personnel.',
+            ),
+          ),
+        );
+      }
+    }
 }

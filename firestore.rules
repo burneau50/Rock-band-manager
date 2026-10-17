@@ -1,11 +1,8 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // ============================================================
-    // FONCTIONS DE SÉCURITÉ
-    // ============================================================
 
     function isSignedIn() {
       return request.auth != null;
@@ -16,49 +13,37 @@ service cloud.firestore {
         && request.auth.uid == "i9FgMz7tKxZqKEa73SCKEa4lmQV2";
     }
 
-
-    // ============================================================
-    // MORCEAUX
-    // ============================================================
-
+    // Morceaux
     match /songs/{songId} {
-
       allow read: if isSignedIn();
-
       allow create: if isSignedIn();
 
       allow update: if isAdmin()
         || (
           isSignedIn()
-
           && request.resource.data.diff(resource.data)
               .affectedKeys()
               .hasOnly(['likes', 'progress', 'status'])
 
           && (
             !request.resource.data.diff(resource.data)
-                .affectedKeys()
-                .hasAny(['status'])
+                .affectedKeys().hasAny(['status'])
             ||
             request.resource.data.status.diff(resource.data.status)
-                .affectedKeys()
-                .hasOnly([request.auth.uid])
+                .affectedKeys().hasOnly([request.auth.uid])
           )
 
           && (
             !request.resource.data.diff(resource.data)
-                .affectedKeys()
-                .hasAny(['progress'])
+                .affectedKeys().hasAny(['progress'])
             ||
             request.resource.data.progress.diff(resource.data.progress)
-                .affectedKeys()
-                .hasOnly([request.auth.uid])
+                .affectedKeys().hasOnly([request.auth.uid])
           )
 
           && (
             !request.resource.data.diff(resource.data)
-                .affectedKeys()
-                .hasAny(['likes'])
+                .affectedKeys().hasAny(['likes'])
             ||
             (
               request.resource.data.likes
@@ -73,13 +58,8 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-
-    // ============================================================
-    // UTILISATEURS
-    // ============================================================
-
+    // Profils utilisateurs
     match /users/{userId} {
-
       allow read: if isSignedIn();
 
       allow create: if isSignedIn()
@@ -91,76 +71,125 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-
-    // ============================================================
-    // REPRÉSENTATIONS / CALENDRIER RDV
-    // ============================================================
-
+    // Représentations
     match /representations/{representationId} {
-
-      // Tous les utilisateurs connectés peuvent voir le calendrier.
       allow read: if isSignedIn();
-
-      // Seul l'administrateur peut créer une date.
       allow create: if isAdmin();
 
-      // ------------------------------------------------------------
-      // MODIFICATION
-      //
-      // ADMIN :
-      // Peut modifier librement la représentation.
-      //
-      // MEMBRE :
-      // Peut uniquement modifier :
-      //   - availability
-      //   - updatedAt
-      //
-      // Et dans availability, il ne peut modifier que SON UID.
-      // ------------------------------------------------------------
-
       allow update: if isAdmin()
-        ||
-        (
+        || (
           isSignedIn()
-
           && request.resource.data.diff(resource.data)
               .affectedKeys()
               .hasOnly(['availability', 'updatedAt'])
 
-          && request.resource.data.availability
-              .diff(resource.data.availability)
+          && request.resource.data.get('availability', {})
+              .diff(resource.data.get('availability', {}))
               .affectedKeys()
               .hasOnly([request.auth.uid])
 
-          && request.resource.data.availability[request.auth.uid] is bool
+          && (
+            !request.resource.data.get('availability', {})
+                .keys().hasAny([request.auth.uid])
+            ||
+            request.resource.data.get('availability', {})
+                .get(request.auth.uid, false) is bool
+          )
         );
 
-      // Seul l'administrateur peut supprimer une date.
       allow delete: if isAdmin();
     }
 
-
-    // ============================================================
-    // ÉVÉNEMENTS EXISTANTS
-    // ============================================================
-
+    // Événements de l'ancienne collection
     match /events/{eventId} {
-
       allow read, create, update: if isSignedIn();
-
       allow delete: if isAdmin();
     }
 
-
-    // ============================================================
-    // ANCIEN CALENDRIER
-    // ============================================================
-
-    match /calendar_events/{eventId} {
-
+    // Calendrier
+   match /calendar_events/{eventId} {
       allow read: if isSignedIn();
 
-      allow create, update, delete: if isAdmin();
+      // Les membres peuvent créer leurs propres événements.
+      allow create: if isAdmin()
+        || (
+          isSignedIn()
+          && request.resource.data.get('createdBy', '') == request.auth.uid
+          && request.resource.data.get('title', '') is string
+          && request.resource.data.get('date', null) is timestamp
+          && request.resource.data.get('availability', {}) is map
+          && request.resource.data.get('availabilityNames', {}) is map
+          && request.resource.data.get('availability', {}).size() == 0
+          && request.resource.data.get('availabilityNames', {}).size() == 0
+        );
+
+      // Seul l'administrateur ou le créateur peut supprimer.
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.get('createdBy', '') == request.auth.uid
+        );
+
+      // L'administrateur peut modifier tous les événements.
+      // Les membres ne peuvent modifier que leurs disponibilités.
+      allow update: if isAdmin()
+        || (
+          isSignedIn()
+          && request.resource.data.diff(resource.data)
+              .affectedKeys()
+              .hasOnly([
+                'availability',
+                'availabilityNames',
+                'updatedAt'
+              ])
+          && request.resource.data.get('availability', {})
+              .diff(resource.data.get('availability', {}))
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+          && request.resource.data.get('availabilityNames', {})
+              .diff(resource.data.get('availabilityNames', {}))
+              .affectedKeys()
+              .hasOnly([request.auth.uid])
+          && (
+            !request.resource.data.get('availability', {})
+                .keys().hasAny([request.auth.uid])
+            || request.resource.data.get('availability', {})
+                .get(request.auth.uid, false) is bool
+          )
+          && (
+            !request.resource.data.get('availabilityNames', {})
+                .keys().hasAny([request.auth.uid])
+            || request.resource.data.get('availabilityNames', {})
+                .get(request.auth.uid, '') is string
+          )
+        );
+    }
+        // Préférences personnelles des utilisateurs
+    match /user_preferences/{userId} {
+      allow read: if isSignedIn()
+        && request.auth.uid == userId;
+
+      allow create, update: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys()
+            .hasOnly(['songOrder', 'summaryUserOrder', 'updatedAt'])
+        && (
+          !request.resource.data.keys().hasAny(['songOrder'])
+          || (
+            request.resource.data.songOrder is list
+            && request.resource.data.songOrder.size() <= 500
+          )
+        )
+        && (
+          !request.resource.data.keys().hasAny(['summaryUserOrder'])
+          || (
+            request.resource.data.summaryUserOrder is list
+            && request.resource.data.summaryUserOrder.size() <= 500
+          )
+        );
+
+      allow delete: if isSignedIn()
+        && request.auth.uid == userId;
     }
   }
 }
