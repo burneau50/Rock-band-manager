@@ -545,7 +545,7 @@ extension _HomeUiMethods on _HomeScreenState {
           const SnackBar(
             content: Text(
               'Tu as atteint la limite de 8 likes. '
-              'Retire un like avant d�?Ten ajouter un autre.',
+              'Retire un like avant d en ajouter un autre.',
             ),
           ),
         );
