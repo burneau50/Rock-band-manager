@@ -325,7 +325,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
         color = Colors.red;
 
-        label = '�? apprendre';
+        label = 'à_apprendre';
 
     }
 
@@ -545,7 +545,7 @@ extension _HomeUiMethods on _HomeScreenState {
           const SnackBar(
             content: Text(
               'Tu as atteint la limite de 8 likes. '
-              'Retire un like avant d�?Ten ajouter un autre.',
+              'Retire un like avant d’en ajouter un autre.',
             ),
           ),
         );
@@ -785,7 +785,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                                 <String>[
 
-                                  'À apprendre',
+                                  'à_apprendre',
 
                                   'en_cours',
 
@@ -795,7 +795,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                                 ? statusMap[user.uid]
 
-                                : 'a_apprendre',
+                                : 'à_apprendre',
 
                             dropdownColor: const Color(0xFF2C2C2C),
 
@@ -825,7 +825,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                               return [
 
-                                _statusLabel('a_apprendre'),
+                                _statusLabel('à_apprendre'),
 
                                 _statusLabel('en_cours'),
 
@@ -839,11 +839,11 @@ extension _HomeUiMethods on _HomeScreenState {
 
                               DropdownMenuItem(
 
-                                value: 'a_apprendre',
+                                value: 'à_apprendre',
 
                                 child: _statusMenuItem(
 
-                                  'À apprendre',
+                                  'à_apprendre',
 
                                   Colors.red,
 
