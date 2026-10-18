@@ -1,4 +1,4 @@
-part of 'home_screen.dart';
+﻿part of 'home_screen.dart';
 
 extension _HomeUiMethods on _HomeScreenState {
 
@@ -42,7 +42,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                   message: _adminMode
 
-                      ? 'Désactiver le mode administration'
+                      ? 'DÃ©sactiver le mode administration'
 
                       : 'Activer le mode administration',
 
@@ -163,7 +163,7 @@ extension _HomeUiMethods on _HomeScreenState {
               if (_isAdmin && _adminMode) ...[
                 const SizedBox(width: 5),
                 Tooltip(
-                  message: 'Retirer tous les likes d’un utilisateur',
+                  message: 'Retirer tous les likes dâ€™un utilisateur',
                   child: InkWell(
                     onTap: () => _showClearUserLikesDialog(context),
                     borderRadius: BorderRadius.circular(16),
@@ -217,7 +217,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                   icon: Icon(Icons.table_chart, size: 16),
 
-                  text: 'Récapitulatif',
+                  text: 'RÃ©capitulatif',
 
                 ),
 
@@ -237,7 +237,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
               onPressed: () => AuthService().signOut(),
 
-              tooltip: 'Déconnexion',
+              tooltip: 'DÃ©connexion',
 
               padding: const EdgeInsets.symmetric(horizontal: 8),
 
@@ -317,7 +317,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
         color = Colors.green;
 
-        label = 'Prêt';
+        label = 'PrÃªt';
 
         break;
 
@@ -325,7 +325,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
         color = Colors.red;
 
-        label = 'à_apprendre';
+        label = 'Ã _apprendre';
 
     }
 
@@ -378,7 +378,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
       if (usersSnapshot.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Aucun utilisateur trouvé.')),
+          const SnackBar(content: Text('Aucun utilisateur trouvÃ©.')),
         );
         return;
       }
@@ -451,7 +451,7 @@ extension _HomeUiMethods on _HomeScreenState {
           backgroundColor: const Color(0xFF2C2C2C),
           title: const Text('Confirmer la suppression'),
           content: Text(
-            'Retirer tous les likes de « $userName » sur tous les morceaux ?\n\nCette action ne peut pas être annulée.',
+            'Retirer tous les likes de Â« $userName Â» sur tous les morceaux ?\n\nCette action ne peut pas Ãªtre annulÃ©e.',
           ),
           actions: [
             TextButton(
@@ -481,7 +481,7 @@ extension _HomeUiMethods on _HomeScreenState {
         return likes is List && likes.contains(targetUid);
       }).toList();
 
-      // Firestore limite un batch à 500 opérations : on utilise des lots de 450.
+      // Firestore limite un batch Ã  500 opÃ©rations : on utilise des lots de 450.
       for (var start = 0; start < matchingSongs.length; start += 450) {
         final batch = FirebaseFirestore.instance.batch();
         final end = (start + 450 < matchingSongs.length)
@@ -500,8 +500,8 @@ extension _HomeUiMethods on _HomeScreenState {
         SnackBar(
           content: Text(
             matchingSongs.isEmpty
-                ? 'Cet utilisateur n�?Tavait aucun like.'
-                : '${matchingSongs.length} like(s) retiré(s) pour $userName.',
+                ? 'Cet utilisateur nï¿½?Tavait aucun like.'
+                : '${matchingSongs.length} like(s) retirÃ©(s) pour $userName.',
           ),
         ),
       );
@@ -519,7 +519,7 @@ extension _HomeUiMethods on _HomeScreenState {
     bool currentlyLiked,
   ) async {
     try {
-      // Retirer un like reste toujours autorisé, même à la limite.
+      // Retirer un like reste toujours autorisÃ©, mÃªme Ã  la limite.
       if (currentlyLiked) {
         await _songService.toggleLike(
           songId: song.id,
@@ -529,7 +529,7 @@ extension _HomeUiMethods on _HomeScreenState {
         return;
       }
 
-      // Compte les morceaux déjà aimés par cet utilisateur.
+      // Compte les morceaux dÃ©jÃ  aimÃ©s par cet utilisateur.
       final snapshot = await FirebaseFirestore.instance
           .collection('songs')
           .get();
@@ -545,7 +545,7 @@ extension _HomeUiMethods on _HomeScreenState {
           const SnackBar(
             content: Text(
               'Tu as atteint la limite de 8 likes. '
-              'Retire un like avant d’en ajouter un autre.',
+              'Retire un like avant dâ€™en ajouter un autre.',
             ),
           ),
         );
@@ -621,7 +621,7 @@ extension _HomeUiMethods on _HomeScreenState {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // Applique l'ordre personnel enregistré pour cet utilisateur.
+        // Applique l'ordre personnel enregistrÃ© pour cet utilisateur.
         final songsById = <String, Song>{
           for (final song in songs) song.id: song,
         };
@@ -634,8 +634,8 @@ extension _HomeUiMethods on _HomeScreenState {
           }
         }
 
-        // Les nouveaux morceaux sont ajoutés à la fin sans effacer
-        // l'ordre personnalisé déjà enregistré.
+        // Les nouveaux morceaux sont ajoutÃ©s Ã  la fin sans effacer
+        // l'ordre personnalisÃ© dÃ©jÃ  enregistrÃ©.
         for (final song in songs) {
           final remainingSong = songsById.remove(song.id);
           if (remainingSong != null) {
@@ -785,7 +785,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                                 <String>[
 
-                                  'à_apprendre',
+                                  'Ã _apprendre',
 
                                   'en_cours',
 
@@ -795,7 +795,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                                 ? statusMap[user.uid]
 
-                                : 'à_apprendre',
+                                : 'Ã _apprendre',
 
                             dropdownColor: const Color(0xFF2C2C2C),
 
@@ -825,7 +825,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                               return [
 
-                                _statusLabel('à_apprendre'),
+                                _statusLabel('Ã _apprendre'),
 
                                 _statusLabel('en_cours'),
 
@@ -839,11 +839,11 @@ extension _HomeUiMethods on _HomeScreenState {
 
                               DropdownMenuItem(
 
-                                value: 'à_apprendre',
+                                value: 'Ã _apprendre',
 
                                 child: _statusMenuItem(
 
-                                  'à_apprendre',
+                                  'Ã _apprendre',
 
                                   Colors.red,
 
@@ -869,7 +869,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                                 value: 'pret',
 
-                                child: _statusMenuItem('Prêt', Colors.green),
+                                child: _statusMenuItem('PrÃªt', Colors.green),
 
                               ),
 
@@ -1069,7 +1069,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                               ),
 
-                              tooltip: 'Écouter sur YouTube',
+                              tooltip: 'Ã‰couter sur YouTube',
 
                               onPressed: () =>
 
@@ -1135,7 +1135,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
                             ),
 
-                            tooltip: 'J’aime',
+                            tooltip: 'Jâ€™aime',
 
                             onPressed: () {
                               _toggleLikeWithLimit(context, song, isLiked);
@@ -1208,12 +1208,12 @@ extension _HomeUiMethods on _HomeScreenState {
             songs.sort((a, b) => b.likes.length.compareTo(a.likes.length));
             if (songs.isEmpty) {
               return const Center(
-                child: Text('Aucun morceau enregistré.', style: TextStyle(color: Colors.grey)),
+                child: Text('Aucun morceau enregistrÃ©.', style: TextStyle(color: Colors.grey)),
               );
             }
             if (userDocs.isEmpty) {
               return const Center(
-                child: Text('Aucun utilisateur trouvé.', style: TextStyle(color: Colors.grey)),
+                child: Text('Aucun utilisateur trouvÃ©.', style: TextStyle(color: Colors.grey)),
               );
             }
             return _PersonalizableSummaryTable(
@@ -1230,7 +1230,7 @@ extension _HomeUiMethods on _HomeScreenState {
 
 }
 
-/// Tableau récapitulatif avec ordre des colonnes enregistré individuellement.
+/// Tableau rÃ©capitulatif avec ordre des colonnes enregistrÃ© individuellement.
 class _PersonalizableSummaryTable extends StatefulWidget {
   const _PersonalizableSummaryTable({
     required this.songs,
@@ -1294,7 +1294,7 @@ class _PersonalizableSummaryTableState extends State<_PersonalizableSummaryTable
         _orderLoaded = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossible de charger l�?Tordre des colonnes.')),
+        const SnackBar(content: Text('Impossible de charger lï¿½?Tordre des colonnes.')),
       );
     }
   }
@@ -1312,7 +1312,7 @@ class _PersonalizableSummaryTableState extends State<_PersonalizableSummaryTable
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d�?Tenregistrer l�?Tordre des colonnes.')),
+          const SnackBar(content: Text('Impossible dï¿½?Tenregistrer lï¿½?Tordre des colonnes.')),
         );
       }
     } finally {
@@ -1428,8 +1428,8 @@ class _PersonalizableSummaryTableState extends State<_PersonalizableSummaryTable
                     final title = song.title.isEmpty ? 'Sans titre' : song.title;
                     final artist = song.artist.isEmpty ? 'Inconnu' : song.artist;
                     return Row(
-                      // Le contenu du tableau est dans un défilement vertical :
-                      // ne pas étirer les cellules sur une hauteur non bornée.
+                      // Le contenu du tableau est dans un dÃ©filement vertical :
+                      // ne pas Ã©tirer les cellules sur une hauteur non bornÃ©e.
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         dataCell(_totalWidth, Row(mainAxisSize: MainAxisSize.min, children: [
@@ -1486,5 +1486,6 @@ class _PersonalizableSummaryTableState extends State<_PersonalizableSummaryTable
     );
   }
 }
+
 
 
